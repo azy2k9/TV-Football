@@ -33,6 +33,8 @@ def create_app(config_name):
     add_resources(api)
 
     api.init_app(app)
+    # Make api globally accessible
+    app.api = api
 
     # Cross Origin requests
     app.after_request(add_cors_headers)
@@ -45,9 +47,10 @@ def add_resources(api):
     Adding resources
     """
     from .resources import TeamResource, MatchResource, MatchListResource, \
-            TeamMatchListResource
+        TeamMatchListResource
 
-    api.add_resource(TeamResource, '/team/<int:id>')
-    api.add_resource(MatchResource, '/match/<int:id>')
-    api.add_resource(MatchListResource, '/matches')
-    api.add_resource(TeamMatchListResource, '/team/<int:id>/matches')
+    api.add_resource(TeamResource, '/team/<int:id>', endpoint='team')
+    api.add_resource(MatchResource, '/match/<int:id>', endpoint='match')
+    api.add_resource(MatchListResource, '/matches', endpoint='matches')
+    api.add_resource(TeamMatchListResource, '/team/<int:id>/matches',
+                     endpoint='team_matches')
