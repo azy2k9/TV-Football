@@ -54,7 +54,7 @@ class MatchListResource(Resource):
         if not args['date']:
             matches = models.Match.query.all()
             result = self.match_list_schema.dump(matches)
-            return jsonify(matches=result.data)
+            return jsonify(data=result.data)
         else:
             try:
                 parsed_date = tuple([int(i) for i in args['date'].split('-')])
@@ -63,9 +63,9 @@ class MatchListResource(Resource):
                 return jsonify(result='Invalid date format')
             matches = models.Match.query.filter(
                     models.Match.date == date
-                    ).all()
+                    ).order_by(models.Match.time).all()
             result = self.match_list_schema.dump(matches)
-            return jsonify(matches=result.data)
+            return jsonify(data=result.data)
 
 
 class TeamMatchListResource(Resource):
@@ -76,4 +76,4 @@ class TeamMatchListResource(Resource):
     def get(self, id):
         team = models.Team.query.get(id)
         result = MatchListResource.match_list_schema.dump(team.matches)
-        return jsonify(matches=result.data)
+        return jsonify(data=result.data)
