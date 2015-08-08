@@ -1,6 +1,7 @@
 """
 Resources
 """
+from operator import attrgetter
 import datetime
 from flask import jsonify
 from flask.ext.restful import Resource, reqparse
@@ -48,22 +49,53 @@ class MatchListResource(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('date')
+        self.parser.add_argument('start')
+        self.parser.add_argument('end')
+
+    def date_parser(self, date_string):
+        try:
+            parsed_date = tuple([int(i) for i in date_string.split('-')])
+            return  datetime.date(*parsed_date)
+        except ValueError:
+            return jsonify(result='Invalid date format')
 
     def get(self):
         args = self.parser.parse_args()
-        if not args['date']:
-            matches = models.Match.query.all()
-            result = self.match_list_schema.dump(matches)
-            return jsonify(data=result.data)
-        else:
-            try:
-                parsed_date = tuple([int(i) for i in args['date'].split('-')])
-                date = datetime.date(*parsed_date)
-            except ValueError:
-                return jsonify(result='Invalid date format')
+        if args['date']:
+            date = self.date_parser(args['date'])
+
+            # Find matches that are on this given day
             matches = models.Match.query.filter(
                     models.Match.date == date
                     ).order_by(models.Match.time).all()
+            result = self.match_list_schema.dump(matches)
+            return jsonify(data=result.data)
+
+        elif args['start'] and args['end']:
+            start = self.date_parser(args['start'])
+            end = self.date_parser(args['end'])
+            matches = models.Match.query.filter(
+                    models.Match.date >= start,
+                    models.Match.date <= end
+                    ).all()
+
+            # Group by date
+            grouped = {match.date.isoformat(): [] for match in matches}
+            for match in matches:
+                date = match.date.isoformat()
+                grouped[date].append(
+                        match
+                        )
+
+            # Serialise
+            for k in grouped:
+                # Sort by time
+                grouped[k] = sorted(grouped[k], key=attrgetter('time'))
+                grouped[k] = self.match_list_schema.dump(grouped[k]).data
+            return jsonify(data=grouped)
+
+        else:
+            matches = models.Match.query.all()
             result = self.match_list_schema.dump(matches)
             return jsonify(data=result.data)
 

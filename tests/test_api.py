@@ -2,7 +2,7 @@ import unittest
 from flask import current_app
 from flask.ext.restful import Api
 from app import create_app, db, models, resources
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 
 class APITestCase(unittest.TestCase):
@@ -36,8 +36,27 @@ class APITestCase(unittest.TestCase):
         self.assertTrue(response.status_code == 404)
 
     def test_matches_endpoint(self):
-        db.session.add(self.generate_match())
+        match = self.generate_match()
+        db.session.add(match)
         db.session.commit()
-        response = self.client.get(Api.url_for(self.app.api, resource=resources.MatchListResource))
+        response = self.client.get(
+                Api.url_for(self.app.api,
+                            resource=resources.MatchListResource)
+                )
         self.assertTrue(response.status_code == 200)
-        self.assertTrue(b'data' in response.data)
+
+        # End date for range test
+        end_date = match.date + timedelta(days=10)
+        response = self.client.get(
+                Api.url_for(self.app.api,
+                            resource=resources.MatchListResource,
+                            start=match.date,
+                            end=end_date)
+                )
+        self.assertTrue(response.status_code == 200)
+
+        response = self.client.get(
+                Api.url_for(self.app.api,
+                            resource=resources.MatchResource, id=5)
+                )
+        self.assertTrue(response.status_code == 200)
