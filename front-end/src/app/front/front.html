@@ -1,0 +1,45 @@
+<div class="mdl-grid mdl-color--grey-100">
+
+    <div class="mdl-cell mdl-cell--3-col"></div>
+    <div class="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet">
+        <div ng-repeat="matches in days">
+            <div ng-if="matches[0]">
+                <h4>{{ matches[0].date | dayNames }}</h4>
+                <div class="mdl-card mdl-shadow--2dp day-card mdl-color--white mdl-color-text--grey-800">
+
+                    <div ng-repeat="match in matches">
+
+                        <div class="match">
+                            <div class="team home-team">
+                                <!-- <div class="logo"> -->
+                                    <!-- <img class="logo" src="#" alt="logo" /> -->
+                                <!-- </div> -->
+                                <h6>{{ match.home_team.name }}</h6>
+                            </div>
+                            <div class="time">
+                                <h4>{{  match.time | kickoff }}</h4>
+                            </div>
+                            <div class="team away-team">
+                                <!-- <div class="logo"> -->
+                                    <!-- [> [> <img class="logo" src="#" alt="logo" /> <] <] -->
+                                <!-- </div> -->
+                                <h6>{{ match.away_team.name }}</h6>
+                            </div>
+                        </div>
+                        <div class="extra mdl-color-text--grey-600">
+                                <p class="competition">{{ match.competition.name }}</p>
+                                <p class="channel" ng-repeat="channel in match.channels">{{ channel.name }}</p>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="mdl-cell mdl-cell--3-col"></div>
+
+</div>
+

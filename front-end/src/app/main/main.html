@@ -1,0 +1,22 @@
+<div class="mdl-base">
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <div class="mdl-layout__header mdl-layout__header--waterfall">
+            <div class="mdl-layout__header-row">
+                <span class="mdl-layout-title">TV Football</span>
+            </div>
+        </div>
+
+        <div class="mdl-layout__drawer">
+            <span class="mdl-layout-title">Menu</span>
+            <nav class="mdl-navigation">
+                <a class="mdl-navigation__link menu-close" ui-sref="home.front">Matches</a>
+                <a class="mdl-navigation__link menu-close" ui-sref="home.about">About</a>
+            </nav>
+        </div>
+
+
+        <div class="mdl-layout__content">
+            <main ui-view=""></main>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,55 @@
+.day-card {
+
+    width: 100% !important;
+    text-align: center;
+}
+
+.match {
+    display: inline-block;
+    padding-top: 12px;
+    width: 100%;
+
+    .team {
+        display: inline-block;
+        color: rgba(0, 0, 0, 0.87);
+        width: 33%;
+
+        .away-team {
+            float: left;
+        }
+
+        .home-team {
+            float: right;
+        }
+
+        .logo {
+            height: 48px;
+            width: 48px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 50%;
+            margin-bottom: 5px;
+        }
+    }
+
+    .time {
+        display: inline-block;
+    }
+
+}
+
+.extra {
+    text-align: center;
+    margin-bottom: 16px;
+
+        .competition {
+            margin: 0px;
+            font-size: xx-small;
+            line-height: 16px;
+        }
+
+        .channel {
+            margin: 0px;
+            font-size: small;
+            line-height: 16px;
+        }
+}

@@ -87,12 +87,12 @@ class MatchListResource(Resource):
                         match
                         )
 
-            # Serialise
             for k in grouped:
                 # Sort by time
                 grouped[k] = sorted(grouped[k], key=attrgetter('time'))
+            # Serialise
                 grouped[k] = self.match_list_schema.dump(grouped[k]).data
-            return jsonify(data=grouped)
+            return jsonify(grouped)
 
         else:
             matches = models.Match.query.all()

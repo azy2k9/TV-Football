@@ -56,8 +56,3 @@ docs/_build/
 
 # PyBuilder
 target/
-
-# Custom
-bower_components
-node_modules
-*.sqlite
