@@ -1,6 +1,5 @@
 import unittest
 from flask import current_app
-from flask.ext.restful import Api
 from app import create_app, db, models, resources
 from datetime import datetime, date, timedelta
 
@@ -39,24 +38,68 @@ class APITestCase(unittest.TestCase):
         match = self.generate_match()
         db.session.add(match)
         db.session.commit()
-        response = self.client.get(
-                Api.url_for(self.app.api,
-                            resource=resources.MatchListResource)
-                )
+
+        response = self.client.get('/api/matches')
         self.assertTrue(response.status_code == 200)
+        self.assertIn(b'data', response.data)
+
+        response = self.client.get('/api/match/1')
+        self.assertTrue(response.status_code == 200)
+        self.assertIn(b'Manchester United', response.data)
+
+        response = self.client.get('/api/matches?date=fakedate')
+        self.assertIn(b'Invalid date format', response.data)
+
+        response = self.client.get('/api/matches',
+                data={
+                    'date': date.today().isoformat()
+                    }
+                )
+        self.assertIn(b'Manchester United', response.data)
+
+        response = self.client.get(
+                '/api/matches',
+                data={
+                    'start': 'fake',
+                    'end': 'fake'
+                    }
+                )
+        self.assertIn(b'Invalid date format', response.data)
 
         # End date for range test
-        end_date = match.date + timedelta(days=10)
         response = self.client.get(
-                Api.url_for(self.app.api,
-                            resource=resources.MatchListResource,
-                            start=match.date,
-                            end=end_date)
+                '/api/matches',
+                data={
+                    'start': date.today().isoformat(),
+                    'end': date.today().isoformat()
+                    }
                 )
         self.assertTrue(response.status_code == 200)
+        self.assertIn(b'Manchester United', response.data)
+        self.assertIn(b'Tottenham', response.data)
 
         response = self.client.get(
-                Api.url_for(self.app.api,
-                            resource=resources.MatchResource, id=5)
+                '/api/match/5'
+                )
+        self.assertIn(b'Not Found', response.data)
+
+
+    def test_team_endpoint(self):
+        match = self.generate_match()
+        db.session.add(match)
+        db.session.commit()
+        response = self.client.get('/api/team/1')
+        self.assertIn(b'Manchester United', response.data)
+        self.assertTrue(response.status_code == 200)
+
+        response = self.client.get('/api/team/2')
+        self.assertIn(b'Tottenham', response.data)
+        self.assertTrue(response.status_code == 200)
+
+        response = self.client.get('/api/team/3')
+        self.assertIn(b'Not Found', response.data)
+
+        response = self.client.get(
+                '/api/team/1/matches'
                 )
         self.assertTrue(response.status_code == 200)

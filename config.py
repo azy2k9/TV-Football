@@ -19,7 +19,12 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/tvFootball-test'
+    travis = bool(os.environ.get('TRAVIS'))
+    if travis:
+        SQLALCHEMY_DATABASE_URI = ('postgresql://postgres@localhost/'
+                                   'travis_ci_test')
+    else:
+        SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/tvFootball_test'
 
 
 class ProductionConfig(Config):

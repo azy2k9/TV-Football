@@ -19,17 +19,7 @@ class Team(db.Model):
 
     @property
     def matches(self):
-        try:
-            home = self.home_matches
-        except AttributeError:
-            home = []
-
-        try:
-            away = self.away_matches
-        except AttributeError:
-            away = []
-
-        return home + away
+        return self.home_matches + self.away_matches
 
     def __repr__(self):
         return '<Team {}>'.format(self.name)

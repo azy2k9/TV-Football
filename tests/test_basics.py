@@ -66,7 +66,12 @@ class BasicsTestCase(unittest.TestCase):
         db.session.add_all(test_matches)
         db.session.commit()
         self.assertTrue(team3.matches)
-        self.assertTrue(team1.matches)
+        self.assertFalse(team3.home_matches)
         self.assertEqual(len(team2.home_matches), 2)
         self.assertEqual(len(team2.away_matches), 1)
         self.assertEqual(len(team2.matches), 3)
+        self.assertEqual(team3.__repr__(), '<Team Chelsea>')
+        self.assertEqual(test_matches[0].__repr__(),
+                         '<Match Loserpool v Southampton>')
+        self.assertEqual(channel.__repr__(), '<Channel BBC>')
+        self.assertEqual(competition.__repr__(), '<Competition Premier League>')

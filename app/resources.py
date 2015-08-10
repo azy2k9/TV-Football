@@ -55,14 +55,18 @@ class MatchListResource(Resource):
     def date_parser(self, date_string):
         try:
             parsed_date = tuple([int(i) for i in date_string.split('-')])
-            return  datetime.date(*parsed_date)
-        except ValueError:
-            return jsonify(result='Invalid date format')
+            parsed_date = datetime.date(*parsed_date)
+        except (ValueError, TypeError):
+            return False
+
+        return parsed_date
 
     def get(self):
         args = self.parser.parse_args()
         if args['date']:
             date = self.date_parser(args['date'])
+            if not date:
+                return jsonify(result='Invalid date format')
 
             # Find matches that are on this given day
             matches = models.Match.query.filter(
@@ -74,6 +78,9 @@ class MatchListResource(Resource):
         elif args['start'] and args['end']:
             start = self.date_parser(args['start'])
             end = self.date_parser(args['end'])
+            if not (start or end):
+                return jsonify(result='Invalid date format')
+
             matches = models.Match.query.filter(
                     models.Match.date >= start,
                     models.Match.date <= end
