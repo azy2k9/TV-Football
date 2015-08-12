@@ -19,7 +19,7 @@ angular.module('frontEnd', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', '
 
     $urlRouterProvider.otherwise('/');
 
-    RestangularProvider.setBaseUrl('http://192.168.0.11:8083/api');
+    RestangularProvider.setBaseUrl('http://tvfootball.zidhuss.com:8082/api');
 
     RestangularProvider.addResponseInterceptor(function(data, operation, what, url, resonse, deferred) {
         var extractedData;
