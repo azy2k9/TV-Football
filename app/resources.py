@@ -58,8 +58,12 @@ class MatchListResource(Resource):
             parsed_date = datetime.date(*parsed_date)
         except (ValueError, TypeError):
             return False
-
         return parsed_date
+
+    @staticmethod
+    def daterange(start_date, end_date):
+        for n in range(int((end_date-start_date).days)):
+            yield start_date + datetime.timedelta(n)
 
     def get(self):
         args = self.parser.parse_args()
@@ -86,20 +90,22 @@ class MatchListResource(Resource):
                     models.Match.date <= end
                     ).all()
 
-            # Group by date
-            grouped = {match.date.isoformat(): [] for match in matches}
-            for match in matches:
-                date = match.date.isoformat()
-                grouped[date].append(
-                        match
-                        )
+            days = []
 
-            for k in grouped:
-                # Sort by time
-                grouped[k] = sorted(grouped[k], key=attrgetter('time'))
-            # Serialise
-                grouped[k] = self.match_list_schema.dump(grouped[k]).data
-            return jsonify(grouped)
+            # range() stops before end so add 1 day to end date
+            end += datetime.timedelta(days=1)
+
+            for date in self.daterange(start, end):
+                days.append({
+                    'date': date.isoformat(),
+                    'matches': self.match_list_schema.dump(
+                        sorted(
+                            [match for match in matches if match.date == date],
+                            key=attrgetter('time')
+                            )
+                        ).data
+                    })
+            return jsonify(data=days)
 
         else:
             matches = models.Match.query.all()

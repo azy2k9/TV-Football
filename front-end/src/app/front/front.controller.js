@@ -6,14 +6,19 @@ angular.module('frontEnd')
     $scope.days = [];
     $scope.daysToList = 7;
     var today = moment();
+    var endDate = moment().add($scope.daysToList, 'days');
+    var query = {
+        start: today.format('YYYY-MM-DD'),
+        end: endDate.format('YYYY-MM-DD')
+    };
     var baseMatches = Restangular.all('matches');
 
-    for (var i = 0; i < $scope.daysToList; i++) {
-        var qDay = today.add(i, 'days').format('YYYY-MM-DD');
-            baseMatches.getList({date: qDay}).then(function(matches) {
-                $scope.days.push(matches);
-            });
-    }
+    baseMatches.getList(query).then(function(days) {
+        for (var i = 0; i < days.length; i++) {
+            $scope.days.push(days[i].matches);
+        }
+    });
+
 })
 .filter('kickoff', function() {
     return function(timeString) {

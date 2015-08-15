@@ -24,7 +24,7 @@ def parse_page():
     matches = {}
     prev_date = ''
 
-    for row in listings.find_all('div', {'class': 'row-fluid'})[:50]:
+    for row in listings.find_all('div', {'class': 'row-fluid'})[:-10]:
         is_date = row.find('div', {'class': 'matchdate'})
 
         if is_date:
