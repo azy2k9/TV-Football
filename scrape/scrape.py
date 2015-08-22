@@ -32,13 +32,16 @@ def parse_page():
             matches[prev_date] = []
         else:
             # Get the temas thta are playing
-            fixture = row.find('div', {'class': 'matchfixture'}).get_text().split(' v ')
+            fixture = row.find('div', {'class':
+                                       'matchfixture'}).get_text().split(' v ')
             fixture = [team.strip() for team in fixture]
             # Get the competition name
             competition = row.find('div', {'class': 'competition'}).get_text()
             # Get the match time
             kickofftime = row.find('div', {'class': 'kickofftime'}).get_text()
-            channels = row.find('div', {'class': 'channels'}).get_text().split('\xa0/\xa0')
+            channels = row.find('div', {'class':
+                                        'channels'}).get_text().split(
+                                                '\xa0/\xa0')
             match = {'fixture': fixture, 'competition': competition,
                      'kickofftime': kickofftime, 'channels': channels}
             matches[prev_date].append(match)
@@ -56,7 +59,11 @@ def parse_date(date, time):
     date = date.split()
     date[1] = re.sub('\D', '', date[1])
     date = ' '.join(date)
-    return datetime.strptime('{} {}'.format(date, time), '%A %d %B %Y %H:%M')
+    try:
+        return datetime.strptime('{} {}'.format(date, time),
+                                 '%A %d %B %Y %H:%M')
+    except ValueError:
+        return False
 
 
 def populate():
@@ -105,13 +112,14 @@ def populate():
                 competitions.append(competition)
 
             match_time = parse_date(day, match['kickofftime'])
-            date = match_time.date()
-            kickoff = match_time.time()
 
-            collection.append(
-                Match(home_team=home_team, away_team=away_team,
-                      channels=match_channels, competition=competition,
-                      time=kickoff, date=date)
+            if match_time:
+                date = match_time.date()
+                kickoff = match_time.time()
+                collection.append(
+                    Match(home_team=home_team, away_team=away_team,
+                          channels=match_channels, competition=competition,
+                          time=kickoff, date=date)
                 )
 
     db.session.add_all(collection)
